@@ -1,0 +1,14 @@
+name: django-csv
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - Django==5.0.3
+      - djangorestframework==3.15.1
+      - psycopg2-binary==2.9.9
+      - python-dotenv==1.0.1
+      - gunicorn==21.2.0
+

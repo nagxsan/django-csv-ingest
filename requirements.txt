@@ -1,0 +1,8 @@
+Django==5.0.3
+djangorestframework==3.15.1
+psycopg2-binary==2.9.9
+python-dotenv==1.0.1
+
+# Optional but recommended for large CSV uploads (stream optimizations)
+pytz==2024.1
+
