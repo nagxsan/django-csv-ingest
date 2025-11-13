@@ -1,31 +1,83 @@
 # Django CSV Ingestion Service
 
-A lightweight CSV ingestion microservice built with **Django**, **Django REST Framework**, and **PostgreSQL**.
+A Django service that accepts a CSV file, validates it against a PostgreSQL table's schema, and inserts the rows efficiently using PostgreSQL COPY.
 
-This service exposes a single endpoint that:
-
-- Accepts a CSV file
-- Validates each row against the **actual PostgreSQL schema**
-- Automatically handles type casting (int, float, bool, datetime, json, etc.)
-- Skips auto-generated columns (e.g., `id`, `created_at`)
-- Inserts valid rows using **PostgreSQL COPY** for high performance
-- Supports strict and non-strict validation modes
-
-Perfect for ETL pipelines, admin CSV uploads, and bulk ingestion systems.
+This README explains how to run the project **locally with Conda** and **via Docker Compose**.
 
 ---
 
-# 🚀 Features
+# 1️⃣ Run Locally Using Conda (Recommended)
 
-- Schema-driven validation (reads schema from Postgres)
-- Handles 100k–1M rows efficiently (COPY-based ingestion)
-- JSON, numeric, boolean, datetime support
-- Auto-detects serial/identity/default columns
-- CSV validation with good error diagnostics
-- Strict vs non-strict ingestion modes
-- Fully tested with Django’s test suite
+## 1. Create Conda environment
 
----
+```sh
+conda env create -f environment.yml
+conda activate django-csv
+```
 
-# 📂 Project Structure
+## 2. Create .env in root
+```sh
+DJANGO_SECRET_KEY=dev-secret
+DJANGO_DEBUG=True
+DB_NAME=csv_demo
+DB_USER=csv_user
+DB_PASSWORD=csvpass
+DB_HOST=127.0.0.1
+DB_PORT=5432
+```
+
+## 3. Start PostgreSQL via Docker
+```sh
+docker run -d --name pg \
+  -p 5432:5432 \
+  -e POSTGRES_USER=csv_user \
+  -e POSTGRES_PASSWORD=csvpass \
+  -e POSTGRES_DB=csv_demo \
+  postgres:16
+```
+
+## 4. Apply migrations
+```sh
+python manage.py migrate
+```
+
+## 5. Start server
+```sh
+python manage.py runserver
+```
+
+API is available at http://localhost:8000
+
+# 2️⃣ Run Using Docker Compose (Django + Postgres)
+
+## 1. Start the stack
+
+```sh
+docker-compose up --build
+```
+
+## 2. Stop the stack
+```sh
+docker-compose down
+```
+
+API is available at http://localhost:8000
+
+Endpoint: `POST /api/upload-csv/`
+
+| Field        | Description                     |
+| ------------ | ------------------------------- |
+| `table_name` | Name of target PostgreSQL table |
+| `file`       | CSV file                        |
+| `strict`     | `true` or `false`               |
+
+Example request:
+```sh
+curl -X POST http://localhost:8000/api/upload-csv/ \
+  -F "table_name=products" \
+  -F "strict=true" \
+  -F "file=@products.csv"
+```
+
+To run tests navigate to home directory and run: `python manage.py test`
 
