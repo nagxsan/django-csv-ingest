@@ -19,6 +19,30 @@ class GetTableDataView(APIView):
         else:
             return Response({"error": "invalid mode"}, status=status.HTTP_400_BAD_REQUEST)
 
+    def get_relations(self, request):
+        with connection.cursor() as cur:
+            cur.execute(
+                """
+                  SELECT table_name
+                  FROM information_schema.tables
+                  WHERE table_schema = 'public'  
+                """
+            )
+            rows = cur.fetchall()
+
+        existing_relations = {row[0] for row in rows}
+        allowed_relations = [
+            rel for rel in ALLOWED_TABLES
+            if rel in existing_relations
+        ]
+
+        return Response(
+            {
+                "relations": allowed_relations,
+                "count": len(allowed_relations)
+            }
+        )
+
     def get_table_data(self, request):
         table = request.GET.get("table")
         if not table:
