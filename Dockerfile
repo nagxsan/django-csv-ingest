@@ -10,6 +10,7 @@ WORKDIR /app
 COPY environment.yml .
 
 # Create conda environment
+RUN conda env remove -n django-csv || true
 RUN conda env create -f environment.yml
 
 # Activate env for all future RUN + CMD
@@ -20,7 +21,7 @@ ENV CONDA_DEFAULT_ENV=django-csv
 ENV PATH=/opt/conda/envs/django-csv/bin:$PATH
 
 # Install gunicorn inside the environment
-RUN pip install gunicorn
+RUN conda run -n django-csv pip install gunicorn
 
 # Copy project files
 COPY . .

@@ -31,9 +31,6 @@ def bulk_copy_into(table_name: str, rows: list[dict], ordered_cols: list[str]):
     if not rows:
         return 0
 
-    logger.info("Ordered cols: %s", ordered_cols)
-    logger.info("Num of rows: %s", len(rows))
-
     # Re-render a CSV purely for COPY
     buf = io.StringIO()
     # No header in data for COPY FROM STDIN WITH CSV
@@ -52,7 +49,6 @@ def bulk_copy_into(table_name: str, rows: list[dict], ordered_cols: list[str]):
                 # s = s.replace("\t", "\\t")
                 s = sanitize_value(v)
                 values.append(s)
-        logger.info(values)
         buf.write("\t".join(values) + "\n")
     buf.seek(0)
 

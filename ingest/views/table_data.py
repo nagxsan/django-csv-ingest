@@ -54,7 +54,11 @@ class GetTableDataView(APIView):
 
         page = int(request.GET.get("page", 1))
         limit = int(request.GET.get("limit", 10))
-        order_by = f"ORDER BY {request.GET.get("order_by")}" if request.GET.get("order_by", None) else ""
+        order_by = (
+            f"ORDER BY {request.GET.get('order_by')}"
+            if request.GET.get('order_by', None)
+            else ""
+        )
 
         reserved = ["table", "page", "limit", "order_by", "mode"]
         filters = {k: v for k, v in request.GET.items() if k not in reserved}
