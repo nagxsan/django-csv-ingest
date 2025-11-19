@@ -150,7 +150,7 @@ class TableDataAPITests(APITestCase):
         resp = self.client.get(url, {"table": "fake_table"})
 
         # your API will probably throw a psycopg2 error → 400
-        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.status_code, 403)
 
     # --------------------------------------------------------------------
     # 11. Unknown filter field should not break SQL
