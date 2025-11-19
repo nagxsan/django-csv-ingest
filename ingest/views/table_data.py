@@ -54,14 +54,14 @@ class GetTableDataView(APIView):
 
         page = int(request.GET.get("page", 1))
         limit = int(request.GET.get("limit", 10))
-        order_by = request.GET.get("order_by", "id")
+        order_by = f"ORDER BY {request.GET.get("order_by")}" if request.GET.get("order_by", None) else ""
 
-        reserved = ["table", "page", "limit", "order_by"]
+        reserved = ["table", "page", "limit", "order_by", "mode"]
         filters = {k: v for k, v in request.GET.items() if k not in reserved}
 
         where_clause, params = build_where_clause(filters)
 
-        query = f"SELECT * FROM {table} {where_clause} ORDER BY {order_by}"
+        query = f"SELECT * FROM {table} {where_clause} {order_by}"
 
         try:
             with connection.cursor() as cur:
